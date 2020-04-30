@@ -1,15 +1,17 @@
 # Commanded Learnings
 
-Commanded is an Elixir library to build applications that require event sourcing.
+Commanded is an Elixir library to build applications that require event sourcing. It follows the CQRS (Command Read Responsibility Segregation) / ES (Event Sourcing) pattern.
+Where reads and write logic are separated.
 
 Some resources I used to learn about Event Sourcing:
-- `https://www.youtube.com/watch?v=JHGkaShoyNs` - Greg Young talk on Event Sourcing and CQRS (Command Read Responsibility Segregation)
+- `https://www.youtube.com/watch?v=JHGkaShoyNs` - Greg Young talk on Event Sourcing and CQRS 
 - `https://www.youtube.com/watch?v=S3f6sAXa3-c` - Bernardo Amorim - CQRS and Event Sourcing - Code Beam SF 2018
 - `https://martinfowler.com/eaaDev/EventSourcing.html` - Martin Fowler - Event Sourcing
 
-It follows the CQRS/ES pattern. Where reads and write logic are separated.
 
-To work out what commanded was doing I'm using the bank account example that I built following this tutorial `https://blog.nootch.net/post/event-sourcing-with-elixir-part-1/`, and taking the console output from the flow of opening an account.
+
+To work out what commanded was doing I'm using the bank account example (`git@github.com:fimac/event_sourcing_bank_api.git`) that 
+I built following this tutorial `https://blog.nootch.net/post/event-sourcing-with-elixir-part-1/`, and taking the console output from the flow of opening an account.
 
 There are IO.inspects added in the flow from the router(web) > controller > context > router(commanded) > validation > aggregate > projector.
 
@@ -19,27 +21,34 @@ Outcomes:
 - How do the execute and apply functions work in the aggregate.
 - When and where do event's get persisted.
 
-I cloned the below repos and started by searching for the logger.debug messages to work out which part of the source code we were in.
+I cloned the below repos and started by searching for the logger.debug messages from the output in the console to work out which part of the source code we were in.
+- `git@github.com:commanded/commanded.git`
+- `git@github.com:commanded/eventstore.git`
+- `git@github.com:commanded/commanded-ecto-projections.git`
 
-`git@github.com:commanded/commanded.git`
-`git@github.com:commanded/eventstore.git`
-`git@github.com:commanded/commanded-ecto-projections.git`
+### Breaking down the output from the console.
 
 
+1. We make a post call to a route we have set up at /api/accounts that kicks off the create function in the account controller.
+  
+`curl -i -X POST -H 'Content-Type:application/json' -d '{"account": {"initial_balance":1000 } }' http://localhost:4000/api/accounts`
 
-iex(4)> [info] POST /api/accounts <----------- Post call made to accounts url
-
+```
+iex(4)> [info] POST /api/accounts
 [debug] Processing with BankAPIWeb.AccountController.create/2
   Parameters: %{"account" => %{"initial_balance" => 1000}}
   Pipelines: [:api]
+```
 
-account controller create: %{"initial_balance" => 1000} <------- Hits accounts controller create function. Which then calls the open account function in the accounts context.
+After the post request is made, we hit the `account_controller.create/2 function`, which calls `BankAPI.Accounts.open_account`
+
+```
+account controller create: %{"initial_balance" => 1000}
+accounts context - open account function
+```
 
 
-accounts context - open account function <----- BankAPI.Accounts.open_account function, which then calls BankAPI.Router.dispatch()
-
-
-### BankAPI.Router, which uses the Commanded.Commands.Router module.
+BankAPI.Router, which uses the Commanded.Commands.Router module.
 the dispatch macro is called, and the command is sent directly to the aggregate (BankAPI.Accounts.Aggregates.Account)
 
 https://github.com/commanded/commanded/blob/04afe01ed51076db73ba90298425357ed4d2af18/lib/commanded/commands/router.ex#L349-L350
