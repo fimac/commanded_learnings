@@ -28,6 +28,8 @@ I cloned the below repos and started by searching for the logger.debug messages 
 
 ### Breaking down the output from the console.
 
+The full output from the console is in this text file (console_output.txt)
+
 
 1. We make a post call to a route we have set up at /api/accounts that kicks off the create function in the account controller.
   
