@@ -1,4 +1,31 @@
-# commanded_learnings
+# Commanded Learnings
+
+Commanded is an Elixir library to build applications that require event sourcing.
+
+Some resources I used to learn about Event Sourcing:
+- `https://www.youtube.com/watch?v=JHGkaShoyNs` - Greg Young talk on Event Sourcing and CQRS (Command Read Responsibility Segregation)
+- `https://www.youtube.com/watch?v=S3f6sAXa3-c` - Bernardo Amorim - CQRS and Event Sourcing - Code Beam SF 2018
+- `https://martinfowler.com/eaaDev/EventSourcing.html` - Martin Fowler - Event Sourcing
+
+It follows the CQRS/ES pattern. Where reads and write logic are separated.
+
+To work out what commanded was doing I'm using the bank account example that I built following this tutorial `https://blog.nootch.net/post/event-sourcing-with-elixir-part-1/`, and taking the console output from the flow of opening an account.
+
+There are IO.inspects added in the flow from the router(web) > controller > context > router(commanded) > validation > aggregate > projector.
+
+Outcomes:
+- Learn more about Event Sourcing and CQRS via the implementation of it.
+- To learn how much commanded abstracts away.
+- How do the execute and apply functions work in the aggregate.
+- When and where do event's get persisted.
+
+I cloned the below repos and started by searching for the logger.debug messages to work out which part of the source code we were in.
+
+`git@github.com:commanded/commanded.git`
+`git@github.com:commanded/eventstore.git`
+`git@github.com:commanded/commanded-ecto-projections.git`
+
+
 
 iex(4)> [info] POST /api/accounts <----------- Post call made to accounts url
 
