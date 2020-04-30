@@ -18,7 +18,7 @@ There are IO.inspects added in the flow from the router(web) > controller > cont
 Outcomes:
 - Learn more about Event Sourcing and CQRS via the implementation of it.
 - To learn how much commanded abstracts away.
-- How do the execute and apply functions work in the aggregate.
+- How do the execute and apply functions get called in the aggregate account module.
 - When and where do event's get persisted.
 
 I cloned the below repos and started by searching for the logger.debug messages from the output in the console to work out which part of the source code we were in.
