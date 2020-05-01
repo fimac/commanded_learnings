@@ -90,7 +90,7 @@ In our case we are sending our command directly to the aggregate, on line :630 I
 
 There's a bunch of stuff I don't understand in the source code at this point, there's a dispatch callback, which has some macro's and looks like it's creates a payload, this payload then is used in another function called dispatch in the module Dispatcher.
 
-`Dispatcher.dispatch -> calls Commanded.Aggregates.Supervisor.open_aggregate/3`
+`Commanded.Commands.Dispatcher.dispatch -> calls Commanded.Aggregates.Supervisor.open_aggregate/3`
 
 This then creates a genserver process. From the docs: `Open an aggregate instance process for the given aggregate module and unique identity.`
 
@@ -100,8 +100,11 @@ This then creates a genserver process. From the docs: `Open an aggregate instanc
 
 `Commanded.Aggregates.Aggregate`
 
+from docs
+```
 Aggregate is a GenServer process used to provide access to aninstance of an event sourced aggregate.
 It allows execution of commands against an aggregate instance, and handles persistence of created events to the configured event store. Concurrent commands sent to an aggregate instance are serialized and executed in the order received.
+```
 
 Aggregate.execute is called, which then does a GenServer.call() to :execute_command. The handle_call callback calls the function execute_command, this then calls a function called apply_and_persist_events.
 
@@ -147,7 +150,11 @@ So I think when the event get's appended to the stream, this is when the event i
 [debug] Subscription "Accounts.ProcessManagers.TransferMoney"@"$all" is enqueueing 1 event(s)
 ```
 
-The below output is from the multi function in BankAPI.Accounts.Projectors.AccountOpened.
+When the event, for example account opened, is emitted, the projects are listening for this event and then update the projection version table, and
+then finally the read model (in the example, the accounts table).
+
+The below output is from the multi function in BankAPI.Accounts.Projectors.AccountOpened. Looking at the debug logs, this is where confirmation
+of the received event is listed.
 
 ```
 event *******: %BankAPI.Accounts.Events.AccountOpened{
